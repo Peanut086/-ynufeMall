@@ -1,13 +1,15 @@
 <template>
 	<div class="goods">
 		<!--用于展示首页商品-->
-		<goods-list-item v-for="item in goods" v-bind:goodsItem="item" class="goods-item"></goods-list-item>
+		<goods-list-item v-for="item in goods" :goodsItem="item" class="goods-item"></goods-list-item>
 	</div>
 </template>
 
 <script>
 	// 导入子列表组件
 	import GoodsListItem from "./GoodsListItem";
+
+	import BetterScroll from 'better-scroll'
 
 	export default {
 		name: "GoodsList",

@@ -28,6 +28,8 @@
 		methods: {
 			itemClick(index){  // 点击切换流行/潮流/新款
 				this.currentIndex = index
+				// 使用自定义事件将index传给父组件
+				this.$emit('tabClick',index)
 			}
 		}
 	}

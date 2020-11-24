@@ -11,8 +11,8 @@
 		<!--特性分类推荐商品部分-->
 		<feature-view/>
 		<!--流行  新款   精选-->
-		<tab-control class="tab_con" :titles="['流行','新款','精选']"></tab-control>
-		<goods-list :goods="goods['pop'].list"></goods-list>
+		<tab-control class="tab_con" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
+		<goods-list :goods=goodsType></goods-list>
 	</div>
 </template>
 
@@ -57,7 +57,7 @@
 					'new': {page:0,list:[]},
 					'sell': {page:0,list:[]},
 				},
-				tab_con: {} // 用于修改tabControl的定位
+				currentType: 'pop', // 用于控制首页商品数据展示类型
 			}
 		},
 		// 组件创建完毕时，发送请求   请求所有数据   但是只保存轮播图、推荐部分的数据
@@ -68,6 +68,7 @@
 			this.getHomeGoods('sell')
 		},
 		methods: {
+			/*网络请求相关方法*/
 			/*抽离轮播、推荐数据请求方法*/
 			getMultidata(){
 				getHomeMultidata().then(res => {
@@ -84,6 +85,35 @@
 					// 修改page  goods对应的page基础上+1
 					this.goods[type].page += 1
 				})
+			},
+
+			/*
+			* 其他方法
+			* */
+
+			/*控制tabControl数据显示*/
+			tabClick(index){
+				// 根据返回的index值修改currentType值
+				switch (index) {
+					case 0:
+						this.currentType = 'pop'
+						break
+					case 1:
+						this.currentType = 'new'
+						break
+					case 2:
+						this.currentType = 'sell'
+						break
+				}
+			}
+		},
+
+		computed: {
+			/*
+			* 用于返回商品类型
+			* */
+			goodsType(){
+				return this.goods[this.currentType].list
 			}
 		}
 	}

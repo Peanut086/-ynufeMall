@@ -66,7 +66,7 @@
 
 	.info>.price{
 		color: #ff5777;
-		margin-left: 20px;
+		margin-left: 10px;
 	}
 
 	.info>.icon{
@@ -77,6 +77,6 @@
 		background-image: url("~assets/img/home/collect.svg");
 		background-position: 0 0;
 		background-size: cover;
-		margin-left: 30px;
+		margin-left: 10px;
 	}
 </style>
