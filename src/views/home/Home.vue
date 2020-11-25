@@ -4,15 +4,19 @@
 		<nav-bar class="home-nav">
 			<div slot="center">淘宝女人街</div>
 		</nav-bar>
-		<!--轮播图部分-->
-		<home-swiper :banners="banners"></home-swiper>
-		<!--首页推荐-->
-		<recommend-views :recommends="recommends"/>
-		<!--特性分类推荐商品部分-->
-		<feature-view/>
-		<!--流行  新款   精选-->
-		<tab-control class="tab_con" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
-		<goods-list :goods=goodsType></goods-list>
+		<scroll class="content">
+			<div>
+				<!--轮播图部分-->
+				<home-swiper :banners="banners"></home-swiper>
+				<!--首页推荐-->
+				<recommend-views :recommends="recommends"/>
+				<!--特性分类推荐商品部分-->
+				<feature-view/>
+				<!--流行  新款   精选-->
+				<tab-control class="tab_con" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
+				<goods-list :goods=goodsType></goods-list>
+			</div>
+		</scroll>
 	</div>
 </template>
 
@@ -31,6 +35,8 @@
 	import FeatureView from "./childComps/FeatureView";
 	// 导入首页商品列表组件
 	import GoodsList from "../../components/content/goods/GoodsList";
+	// 导入better-scroll组件
+	import Scroll from '../../components/common/scroll/Scroll'
 
 	/*数据请求*/
 	// 导入首页轮播图数据请求
@@ -45,7 +51,8 @@
 			HomeSwiper,
 			RecommendViews,
 			FeatureView,
-			GoodsList
+			GoodsList,
+			Scroll
 		},
 		// 保存请求到的数据
 		data(){
@@ -121,8 +128,8 @@
 
 <style scoped>
 	#home {
-		/*position: relative;*/
-		/*height: 100vh;*/
+		position: relative;
+		height: 100vh;
 		/*防止顶部导航遮挡轮播图*/
 		padding-top: 44px;
 	}
@@ -135,5 +142,13 @@
 	.tab_con{
 		position: sticky;
 		top: 44px;
+	}
+
+	.content{
+		position: absolute;
+		top: 44px;
+		bottom: 49px;
+		left: 0;
+		right: 0;
 	}
 </style>

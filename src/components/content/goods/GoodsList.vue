@@ -9,8 +9,6 @@
 	// 导入子列表组件
 	import GoodsListItem from "./GoodsListItem";
 
-	import BetterScroll from 'better-scroll'
-
 	export default {
 		name: "GoodsList",
 		props: {
