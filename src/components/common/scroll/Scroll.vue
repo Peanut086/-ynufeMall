@@ -1,7 +1,9 @@
 <template>
 	<!--用ref引用比用class引用要好 不会冲突-->
 	<div ref="wrapper">
-		<slot></slot>
+		<div class="content">
+			<slot></slot>
+		</div>
 	</div>
 </template>
 
@@ -22,7 +24,15 @@
 					probeType: 3,
 					click: true
 				})
-			},2000)
+			},1000)
+		},
+		methods: {
+			/* 
+			点击返回顶部的方法
+			*/
+			backTop(x,y,time=400){
+				this.scroll.scrollTo(x,y,time)
+			}
 		}
 	}
 </script>

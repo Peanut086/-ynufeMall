@@ -4,8 +4,7 @@
 		<nav-bar class="home-nav">
 			<div slot="center">淘宝女人街</div>
 		</nav-bar>
-		<scroll class="content">
-			<div>
+		<scroll class="content" ref="scroll">
 				<!--轮播图部分-->
 				<home-swiper :banners="banners"></home-swiper>
 				<!--首页推荐-->
@@ -15,8 +14,11 @@
 				<!--流行  新款   精选-->
 				<tab-control class="tab_con" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
 				<goods-list :goods=goodsType></goods-list>
-			</div>
 		</scroll>
+
+		<!-- 返回顶部 -->
+		<!-- 这里要在跟组件监听事件，因此需要加上native修饰符  -->
+		<back-top @click.native="backClick"/>
 	</div>
 </template>
 
@@ -37,6 +39,8 @@
 	import GoodsList from "../../components/content/goods/GoodsList";
 	// 导入better-scroll组件
 	import Scroll from '../../components/common/scroll/Scroll'
+	// 导入返回顶部 按钮组件
+	import BackTop from '../../components/content/back-top/backTop'
 
 	/*数据请求*/
 	// 导入首页轮播图数据请求
@@ -52,7 +56,8 @@
 			RecommendViews,
 			FeatureView,
 			GoodsList,
-			Scroll
+			Scroll,
+			BackTop
 		},
 		// 保存请求到的数据
 		data(){
@@ -112,6 +117,10 @@
 						this.currentType = 'sell'
 						break
 				}
+			},
+
+			backClick(){
+				this.$refs.scroll.backTop(0,0,800)
 			}
 		},
 
@@ -138,10 +147,6 @@
 		font-weight: 600;
 		background-color: var(--color-tint);
 		z-index: 9;
-	}
-	.tab_con{
-		position: sticky;
-		top: 44px;
 	}
 
 	.content{
