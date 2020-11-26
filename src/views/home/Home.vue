@@ -4,21 +4,27 @@
 		<nav-bar class="home-nav">
 			<div slot="center">淘宝女人街</div>
 		</nav-bar>
-		<scroll class="content" ref="scroll">
-				<!--轮播图部分-->
-				<home-swiper :banners="banners"></home-swiper>
-				<!--首页推荐-->
-				<recommend-views :recommends="recommends"/>
-				<!--特性分类推荐商品部分-->
-				<feature-view/>
-				<!--流行  新款   精选-->
-				<tab-control class="tab_con" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
-				<goods-list :goods=goodsType></goods-list>
+		<scroll class="content" 
+						ref="scroll"
+		        :probeType="3"
+						@scroll="scrollContent"
+						@pullUp="loadMore">
+<!--				<div>-->
+					<!--轮播图部分-->
+					<home-swiper :banners="banners"></home-swiper>
+					<!--首页推荐-->
+					<recommend-views :recommends="recommends"/>
+					<!--特性分类推荐商品部分-->
+					<feature-view/>
+					<!--流行  新款   精选-->
+					<tab-control class="tab_con" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
+					<goods-list :goods=goodsType></goods-list>
+<!--				</div>-->
 		</scroll>
 
 		<!-- 返回顶部 -->
 		<!-- 这里要在跟组件监听事件，因此需要加上native修饰符  -->
-		<back-top @click.native="backClick"/>
+		<back-top @click.native="backClick" v-show="isShowBackTop"/>
 	</div>
 </template>
 
@@ -70,6 +76,7 @@
 					'sell': {page:0,list:[]},
 				},
 				currentType: 'pop', // 用于控制首页商品数据展示类型
+				isShowBackTop: false,  // 保存是否显示回顶部按钮的状态
 			}
 		},
 		// 组件创建完毕时，发送请求   请求所有数据   但是只保存轮播图、推荐部分的数据
@@ -96,6 +103,7 @@
 					this.goods[type].list.push(...res.data.data.list)
 					// 修改page  goods对应的page基础上+1
 					this.goods[type].page += 1
+					console.log('请求到了')
 				})
 			},
 
@@ -119,8 +127,30 @@
 				}
 			},
 
+			/* 返回顶部按钮监听点击事件 */
 			backClick(){
 				this.$refs.scroll.backTop(0,0,800)
+			},
+
+			/*控制返回按钮的显示*/
+			scrollContent(position){
+				if(Math.abs(position) > 1000){
+					this.isShowBackTop = true
+				}else{
+					this.isShowBackTop = false
+				}
+			},
+
+			/* 监听上拉刷新时子组件发送的事件 */
+			loadMore(){
+				this.getHomeGoods(this.currentType) // 获取下一page的数据
+
+				setTimeout(()=>{
+					// 重新计算content的高度
+					this.$refs.scroll.refreshContent()
+				},600)
+				// 结束此次滚动监听
+				this.$refs.scroll.stopScroll()
 			}
 		},
 
@@ -137,7 +167,7 @@
 
 <style scoped>
 	#home {
-		position: relative;
+		/*position: relative;*/
 		height: 100vh;
 		/*防止顶部导航遮挡轮播图*/
 		padding-top: 44px;
@@ -150,10 +180,7 @@
 	}
 
 	.content{
-		position: absolute;
-		top: 44px;
-		bottom: 49px;
-		left: 0;
-		right: 0;
+		height: calc(100% - 93px + 44px);
+		overflow: hidden;
 	}
 </style>
