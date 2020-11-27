@@ -6,9 +6,7 @@
 		</nav-bar>
 		<scroll class="content" 
 						ref="scroll"
-		        :probeType="3"
-						@scroll="scrollContent"
-						@pullUp="loadMore">
+						@scroll="scrollContent">
 <!--				<div>-->
 					<!--轮播图部分-->
 					<home-swiper :banners="banners"></home-swiper>
@@ -65,6 +63,23 @@
 			Scroll,
 			BackTop
 		},
+		/*====声明周期函数=====*/
+		// 组件创建完毕时，发送请求   请求所有数据   但是只保存轮播图、推荐部分的数据
+		created() {
+			this.getMultidata(),
+			this.getHomeGoods('pop')
+			this.getHomeGoods('new')
+			this.getHomeGoods('sell')
+		},
+		mounted(){
+			// 实例被挂载完成后开始监听商品展示组件的每一张图片的加载事件
+			// this.$bus.$on('imgLoaded',this.refreshHeight)
+			const refresh = this.debounce(this.refreshHeight,500)
+
+			this.$bus.$on('imgLoaded',()=>{
+				refresh()
+			})
+		},
 		// 保存请求到的数据
 		data(){
 			return {
@@ -78,13 +93,6 @@
 				currentType: 'pop', // 用于控制首页商品数据展示类型
 				isShowBackTop: false,  // 保存是否显示回顶部按钮的状态
 			}
-		},
-		// 组件创建完毕时，发送请求   请求所有数据   但是只保存轮播图、推荐部分的数据
-		created() {
-			this.getMultidata(),
-			this.getHomeGoods('pop')
-			this.getHomeGoods('new')
-			this.getHomeGoods('sell')
 		},
 		methods: {
 			/*网络请求相关方法*/
@@ -103,7 +111,6 @@
 					this.goods[type].list.push(...res.data.data.list)
 					// 修改page  goods对应的page基础上+1
 					this.goods[type].page += 1
-					console.log('请求到了')
 				})
 			},
 
@@ -129,7 +136,8 @@
 
 			/* 返回顶部按钮监听点击事件 */
 			backClick(){
-				this.$refs.scroll.backTop(0,0,800)
+				// 执行操作之前先判断scroll实例是否存在
+				this.$refs.scroll && this.$refs.scroll.backTop(0,0,800)
 			},
 
 			/*控制返回按钮的显示*/
@@ -141,16 +149,21 @@
 				}
 			},
 
-			/* 监听上拉刷新时子组件发送的事件 */
-			loadMore(){
-				this.getHomeGoods(this.currentType) // 获取下一page的数据
+			/*重新计算contentHeight*/
+			refreshHeight(){
+				this.$refs.scroll && this.$refs.scroll.refreshContent()
+			},
 
-				setTimeout(()=>{
-					// 重新计算content的高度
-					this.$refs.scroll.refreshContent()
-				},600)
-				// 结束此次滚动监听
-				this.$refs.scroll.stopScroll()
+			/*监听图片加载的节流方法*/
+			debounce(func,delay) {
+				let timer = null  // 用于保存定时器
+				return function (...args) {
+					// 如果定时器存在，清除定时器，随后重新设置timer
+					if(timer !== null) clearTimeout(timer)
+					timer = setTimeout(()=>{
+						func.apply(this,args)
+					}, delay)  // 超过delay为接收到事件会调用这里的func   必要的额时候可以修改func的this指向  由于timer对外部存在引用，因此不会被销毁
+				}
 			}
 		},
 

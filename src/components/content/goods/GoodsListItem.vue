@@ -1,9 +1,9 @@
 <template>
 	<!--用于显示父组件传递过来的子商品内容内容-->
 	<div class="container">
-		<a :href="goodsItem.link">
+		<a>
 			<div>
-				<img :src="goodsItem.show.img" alt="">
+				<img :src="goodsItem.show.img" alt="" @load="imgLoad">
 			</div>
 			<div class="info">
 				<p class="title">{{goodsItem.title}}</p>
@@ -24,6 +24,12 @@
 				default(){
 					return {}
 				}
+			}
+		},
+		methods: {
+			/*监听每个子元素的图片加载*/
+			imgLoad(){
+				this.$bus.$emit('imgLoaded') // 发送到Home组件
 			}
 		}
 	}
