@@ -1,29 +1,56 @@
 <template>
-	<div id="home">
-		<!--顶部标题-->
-		<nav-bar class="home-nav">
-			<div slot="center">淘宝女人街</div>
-		</nav-bar>
-		<scroll class="content" 
-						ref="scroll"
-						@scroll="scrollContent">
-<!--				<div>-->
-					<!--轮播图部分-->
-					<home-swiper :banners="banners"></home-swiper>
-					<!--首页推荐-->
-					<recommend-views :recommends="recommends"/>
-					<!--特性分类推荐商品部分-->
-					<feature-view/>
-					<!--流行  新款   精选-->
-					<tab-control class="tab_con" :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
-					<goods-list :goods=goodsType></goods-list>
-<!--				</div>-->
-		</scroll>
+	<!--缓存home组件-->
+	<keep-alive>
+		<div id="home">
 
-		<!-- 返回顶部 -->
-		<!-- 这里要在跟组件监听事件，因此需要加上native修饰符  -->
-		<back-top @click.native="backClick" v-show="isShowBackTop"/>
-	</div>
+			<!--顶部标题-->
+			<nav-bar class="home-nav">
+				<div slot="center">淘宝女人街</div>
+			</nav-bar>
+
+			<!-- 用于解决吸顶效果的卡顿 -->
+			<tab-control
+					:titles="['流行','新款','精选']"
+					@tabClick="tabClick"
+					ref="tabControl1"
+					v-show="isTabShow">
+			</tab-control>
+
+			<scroll class="content"
+			        ref="scroll"
+
+			        :probe-type="3"
+			        :pull-up-load="true"
+
+			        @scroll="scrollContent"
+			        @loading="loadMore">
+
+				<!--轮播图部分-->
+				<home-swiper :banners="banners"
+				             @swiperImageLoad="getTabConTop"></home-swiper>
+
+				<!--首页推荐-->
+				<recommend-views :recommends="recommends"/>
+
+				<!--特性分类推荐商品部分-->
+				<feature-view/>
+
+				<!--流行  新款   精选-->
+				<tab-control
+						:titles="['流行','新款','精选']"
+						@tabClick="tabClick"
+						ref="tabControl2"
+						v-show="!isTabShow">
+				</tab-control>
+				<goods-list :goods=goodsType></goods-list>
+				<!--				</div>-->
+			</scroll>
+
+			<!-- 返回顶部 -->
+			<!-- 这里要在跟组件监听事件，因此需要加上native修饰符  -->
+			<back-top @click.native="backClick" v-show="isShowBackTop"/>
+		</div>
+	</keep-alive>
 </template>
 
 <script>
@@ -50,6 +77,10 @@
 	// 导入首页轮播图数据请求
 	import { getHomeMultidata,getHomeGoods } from '../../network/home'
 
+	/*导入函数*/
+	// 防抖函数
+	import {debounce} from '../../common/utils'
+
 	export default {
 		name: "Home",
 		components: {
@@ -63,7 +94,7 @@
 			Scroll,
 			BackTop
 		},
-		/*====声明周期函数=====*/
+		/*====生命周期函数=====*/
 		// 组件创建完毕时，发送请求   请求所有数据   但是只保存轮播图、推荐部分的数据
 		created() {
 			this.getMultidata(),
@@ -74,12 +105,17 @@
 		mounted(){
 			// 实例被挂载完成后开始监听商品展示组件的每一张图片的加载事件
 			// this.$bus.$on('imgLoaded',this.refreshHeight)
-			const refresh = this.debounce(this.refreshHeight,500)
+			const refresh = debounce(this.refreshHeight,100)
 
 			this.$bus.$on('imgLoaded',()=>{
 				refresh()
 			})
 		},
+		beforeDestroy() {
+			// 销毁前保存bs的Y值(不知道keep-alive为啥不起效果，所以用的这个)
+			this.saveY = this.$refs.scroll.scroll.y
+		},
+
 		// 保存请求到的数据
 		data(){
 			return {
@@ -92,6 +128,9 @@
 				},
 				currentType: 'pop', // 用于控制首页商品数据展示类型
 				isShowBackTop: false,  // 保存是否显示回顶部按钮的状态
+				tabConOffsetTop: 0,  // 保存tabbarControl的offsetTop值
+				isTabShow: false,  // 顶部用于吸顶的tab是否显示
+				saveY: 0,  // 用于保存当前组件取消激活时的bs的Y值
 			}
 		},
 		methods: {
@@ -132,6 +171,9 @@
 						this.currentType = 'sell'
 						break
 				}
+				// 同步两个tabControl的index值  否则点击其中一个另一个index不会同步变动
+				this.$refs.tabControl1.currentIndex = index
+				this.$refs.tabControl2.currentIndex = index
 			},
 
 			/* 返回顶部按钮监听点击事件 */
@@ -142,11 +184,11 @@
 
 			/*控制返回按钮的显示*/
 			scrollContent(position){
-				if(Math.abs(position) > 1000){
-					this.isShowBackTop = true
-				}else{
-					this.isShowBackTop = false
-				}
+				// 判断是否需要显示返回顶部按钮
+				this.isShowBackTop = Math.abs(position) > 1000 ? true : false
+				
+				// 判断滚动的距离是否让tabbarControl到达页面顶部，是否需要添加吸顶效果
+				this.isTabShow = Math.abs(position) >= this.tabConOffsetTop
 			},
 
 			/*重新计算contentHeight*/
@@ -154,16 +196,19 @@
 				this.$refs.scroll && this.$refs.scroll.refreshContent()
 			},
 
-			/*监听图片加载的节流方法*/
-			debounce(func,delay) {
-				let timer = null  // 用于保存定时器
-				return function (...args) {
-					// 如果定时器存在，清除定时器，随后重新设置timer
-					if(timer !== null) clearTimeout(timer)
-					timer = setTimeout(()=>{
-						func.apply(this,args)
-					}, delay)  // 超过delay为接收到事件会调用这里的func   必要的额时候可以修改func的this指向  由于timer对外部存在引用，因此不会被销毁
-				}
+			/*上拉加载的事件*/
+			loadMore(){
+				// 请求数据
+				this.getHomeGoods(this.currentType)
+
+				// 请求完毕后结束当前的上拉刷新事件  否则加载一两页之后会无法继续刷新
+				this.$refs.scroll && this.$refs.scroll.stopScrollUp()
+			},
+
+			/*控制tabControl的吸顶效果*/
+			getTabConTop(){
+				// 保存tabbarControl的offsetTop值
+				this.tabConOffsetTop = this.$refs.tabControl2.$el.offsetTop
 			}
 		},
 
@@ -183,7 +228,7 @@
 		/*position: relative;*/
 		height: 100vh;
 		/*防止顶部导航遮挡轮播图*/
-		padding-top: 44px;
+		/* padding-top: 44px; */
 	}
 	.home-nav{
 		color: #fff;
@@ -195,5 +240,6 @@
 	.content{
 		height: calc(100% - 93px + 44px);
 		overflow: hidden;
+		padding-bottom: 0;
 	}
 </style>

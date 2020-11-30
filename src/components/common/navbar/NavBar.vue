@@ -18,12 +18,6 @@
 	height: 44px;
 	line-height: 44px;
 	text-align: center;
-
-	/*固定不随页面滚动*/
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
 }
 
 	.left,.right{

@@ -20,6 +20,7 @@ const routes = [
 	/*首页*/
 	{
 		path: '/home',
+		name: 'Home',
 		component: Home
 	},
 	/*分类*/
