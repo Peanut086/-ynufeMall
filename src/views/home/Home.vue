@@ -111,11 +111,14 @@
 				refresh()
 			})
 		},
-		beforeDestroy() {
-			// 销毁前保存bs的Y值(不知道keep-alive为啥不起效果，所以用的这个)
+		deactivated() {
+			// 保存离开时bs滚动的Y值
 			this.saveY = this.$refs.scroll.scroll.y
 		},
-
+		activated() {
+			// 再次激活时，设置y值为离开前的那个值
+			this.$refs.scroll && this.$refs.scroll.backTop(0,this.saveY,0)
+		},
 		// 保存请求到的数据
 		data(){
 			return {

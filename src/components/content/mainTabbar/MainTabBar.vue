@@ -1,6 +1,9 @@
 <template>
 	<div>
-		<router-view></router-view>
+		<!--缓存当前激活的组件-->
+		<keep-alive>
+			<router-view></router-view>
+		</keep-alive>
 		<tab-bar>
 			<tab-bar-item path="/home">
 				<!-- dom中使用别名需要加 ~ -->
