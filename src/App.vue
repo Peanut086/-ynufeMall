@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-	  <keep-alive>
-		  <main-tab-bar/>
-	  </keep-alive>
+		<main-tab-bar/>
   </div>
 </template>
 

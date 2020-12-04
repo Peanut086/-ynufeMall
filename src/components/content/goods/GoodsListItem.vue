@@ -1,6 +1,6 @@
 <template>
 	<!--用于显示父组件传递过来的子商品内容内容-->
-	<div class="container">
+	<div class="container" @click="itemClick">
 		<a>
 			<div>
 				<img :src="goodsItem.show.img" alt="" @load="imgLoad">
@@ -19,6 +19,7 @@
 	export default {
 		name: "GoodListItem",
 		props: {
+			// 父组件传递过来的要显示的商品的数据
 			goodsItem: {
 				type: Object,
 				default(){
@@ -30,6 +31,12 @@
 			/*监听每个子元素的图片加载*/
 			imgLoad(){
 				this.$bus.$emit('imgLoaded') // 发送到Home组件
+			},
+			/* 监听每个子元素的点击事件，进行商品详情页的跳转 */
+			itemClick(){
+				// 点击后跳转到详情页  这里业务需求需要返回  所以使用push更合适
+				// 跳转的同时携带被点击的商品的id
+				this.$router.push('/detail/' + this.goodsItem.iid)
 			}
 		}
 	}

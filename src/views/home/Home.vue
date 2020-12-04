@@ -1,7 +1,5 @@
 <template>
-	<!--缓存home组件-->
-	<keep-alive>
-		<div id="home">
+	<div id="home">
 
 			<!--顶部标题-->
 			<nav-bar class="home-nav">
@@ -49,8 +47,7 @@
 			<!-- 返回顶部 -->
 			<!-- 这里要在跟组件监听事件，因此需要加上native修饰符  -->
 			<back-top @click.native="backClick" v-show="isShowBackTop"/>
-		</div>
-	</keep-alive>
+	</div>
 </template>
 
 <script>
@@ -102,7 +99,7 @@
 			this.getHomeGoods('new')
 			this.getHomeGoods('sell')
 		},
-		mounted(){
+		mounted(){	
 			// 实例被挂载完成后开始监听商品展示组件的每一张图片的加载事件
 			// this.$bus.$on('imgLoaded',this.refreshHeight)
 			const refresh = debounce(this.refreshHeight,100)
@@ -177,6 +174,9 @@
 				// 同步两个tabControl的index值  否则点击其中一个另一个index不会同步变动
 				this.$refs.tabControl1.currentIndex = index
 				this.$refs.tabControl2.currentIndex = index
+
+				// 切换到另一个类别后从顶部开始滚动
+				this.$refs.scroll && this.$refs.scroll.backTop(0,-this.tabConOffsetTop,0)
 			},
 
 			/* 返回顶部按钮监听点击事件 */
