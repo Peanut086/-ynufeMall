@@ -9,3 +9,17 @@ export function getDetail(iid){
     }
   })
 }
+
+
+// 用于整合商品信息轮播图下的detailBaseInfo组件所需的数据
+export class Goods{
+	constructor(columns,itemInfo,services){
+		this.columns = columns;
+		this.title = itemInfo.title;
+		this.oldPrice = itemInfo.oldPrice;
+		this.lowNowPrice = itemInfo.lowNowPrice;
+		this.services = services.shopInfo.services;
+		this.discountDesc = itemInfo.discountDesc;
+		this.discountBgColor = itemInfo.discountBgColor;
+	}
+}
