@@ -18,8 +18,23 @@ export class Goods{
 		this.title = itemInfo.title;
 		this.oldPrice = itemInfo.oldPrice;
 		this.lowNowPrice = itemInfo.lowNowPrice;
-		this.services = services.shopInfo.services;
+		this.price = itemInfo.price;
+		this.services = services;
 		this.discountDesc = itemInfo.discountDesc;
 		this.discountBgColor = itemInfo.discountBgColor;
+	}
+}
+
+// 整合商家信息展示所需的数据
+export class Shop{
+	constructor(data){
+		this.shopName = data.name;
+		this.logo = data.shopLogo;
+		this.fans = data.cFans;
+		this.sells = data.cSells;
+		this.goods = data.cGoods;
+		this.shopUrl = data.shopUrl;
+		this.score = data.score;
+		this.level = data.level;
 	}
 }

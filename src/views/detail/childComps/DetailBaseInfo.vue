@@ -1,5 +1,5 @@
 <template>
-	<div class="container">
+	<div class="base-container">
 		<p class="title">{{goodsData.title}}</p>
 		
 		<div class="columns">
@@ -7,9 +7,16 @@
 		</div>
 		
 		<div class="price">
-			<span class="old-price">{{goodsData.oldPrice}}</span>
+			<span class="old-price">{{goodsData.price}}</span>
 			<span class="now-price">{{goodsData.lowNowPrice}}</span>
 			<span class="discount" :style="{backgroundColor: goodsData.discountBgColor}">{{goodsData.discountDesc}}</span>
+		</div>
+		
+		<div class="services">
+			<div class="services-item" v-for="item in goodsData.services">
+				<img :src="item.icon" class="icon"></img>
+				<span class="item-name">{{item.name}}</span>
+			</div>
 		</div>
 	</div>
 </template>
@@ -30,9 +37,8 @@
 </script>
 
 <style scope>
-	.container{
+	.base-container{
 		width: 100%;
-		background-color: #EEE;
 		box-shadow: 2px -2px 2px 2px #ccc inset,
 								-2px -2px 2px 2px #ccc inset;
 		padding: 8px;
@@ -46,6 +52,7 @@
 	
 	.columns{
 		display: flex;
+		font-size: 12px;
 		flex-direction: row;
 		justify-content: space-between;
 	}
@@ -61,26 +68,52 @@
 	.price{
 		margin-top: 6px;
 		padding: 4px;
-		font-size: 24px
+		border-bottom: 1px solid #ccc;
 	}
 	
 	.old-price{
 		float: left;
-		color: red;
-		text-decoration: line-through;
+		font-size: 16px;
+		font-weight: 600;
+		color: rgb(255, 88, 120);
 	}
 	
 	.now-price{
-		color: red;
+		color: #999999;
 		float: left;
 		margin-left: 6px;
+		margin-top: 3px;
+		font-size: 12px;
+		text-decoration: line-through;
 	}
 	
 	.discount{
 		display: inline-block;
-		font-size: 18px;
+		font-size: 12px;
+		text-align: center;
 		margin-left: 6px;
+		padding: 0 2px;
 		border-radius: 3px;
 		color: #0F0F0F;
+		vertical-align: middle;
+	}
+	
+	.services{
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		margin-top: 2px;
+	}
+	
+	.services-item{
+		flex: 1;
+		text-align: center;
+	}
+	.services-item> img{
+		width: 10px;
+		height: 10px;
+	}
+	.services-item>.item-name{
+		font-size: 12px;
 	}
 </style>

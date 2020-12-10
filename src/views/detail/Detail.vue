@@ -1,37 +1,48 @@
 <template>
-  <div>
-    <detail-nav-bar/>
-		<!-- 轮播 -->
-    <detail-swiper :topImg="topImg"/>
-		<!-- 商品基本信息 -->
-		<detail-base-info :goodsData="goods"></detail-base-info>
+  <div class="contain">
+    <detail-nav-bar class="detail-nav"/>
+		<scroll ref="scrollComp" class="content">
+			<!-- 轮播 -->
+			<detail-swiper :topImg="topImg"/>
+			<!-- 商品基本信息 -->
+			<detail-base-info :goodsData="goods"></detail-base-info>
+			<!-- 店铺基本信息 -->
+			<shop-base-info :shopInfo="shop"></shop-base-info>
+		</scroll>
 	</div>
 </template>
 
 <script>
+	// 导入Scroll组件
+	import Scroll from '../../components/common/scroll/Scroll.vue'
   // 导入详情页导航组件
   import DetailNavBar from './childComps/DetailNavBar'
   // 导入轮播
   import DetailSwiper from './childComps/DetailSwiper'
 	// 导入DetailBaseInfo组件
 	import DetailBaseInfo from './childComps/DetailBaseInfo'
+	// 导入店铺基本信息ShopBaseInfo组件
+	import ShopBaseInfo from './childComps/ShopBaseInfo'
 
   // 网络请求
-  import {getDetail,Goods} from 'network/detail'
+  import {getDetail,Goods,Shop} from 'network/detail'
 
   export default {
     name: 'Detail',
     components: {
+			Scroll,
       DetailNavBar,
       DetailSwiper,
-			DetailBaseInfo
+			DetailBaseInfo,
+			ShopBaseInfo
     },
     data(){
       return {
         iid: null, // 用于保存路由传递过来的参数：商品id
         topImg: [], // 保存轮播图数据
 				goods: {}, // 用于保存要传递给DetailBaseInfo组件的数据
-      }
+				shop: {},  // 用于保存店铺基本信息
+			}
     },
     created(){
       // 保存商品id
@@ -40,16 +51,35 @@
       // 根据id请求数据并保存下来
       getDetail(this.iid).then(res => {
         // 保存轮播图数据
+        console.log(res.data.result);
 				const datas = res.data.result;
         this.topImg = datas.itemInfo.topImages
 		
 				// 保存要传递给保存要传递给DetailBaseInfo组件的数据
-				this.goods = new Goods(datas.columns,datas.itemInfo,datas)
+				this.goods = new Goods(datas.columns,datas.itemInfo,datas.shopInfo.services)
+				
+				// 保存请求到的店铺基本信息
+				this.shop = new Shop(datas.shopInfo)
       })
     }
   }
 </script>
 
 <style scoped>
-
+	.contain{
+		position: relative;
+		height: 100vh;
+		z-index: 9;
+	}
+	.content{
+		height: calc(100% - 44px);
+		z-index: 9;
+		background-color: #fff;
+	}
+	
+	.detail-nav{
+		position: relative;
+		z-index: 10;
+		background-color: #fff;
+	}
 </style>>

@@ -31,7 +31,7 @@
 
 <style scoped>
   .container{
-    height: 300px;
+    height: 400px;
     overflow: hidden;
   }
 </style>
