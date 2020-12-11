@@ -1,5 +1,5 @@
 <template>
-	<div class="base-container">
+	<div class="base-container" v-if="Object.keys(goodsData).length !== 0">
 		<p class="title">{{goodsData.title}}</p>
 		
 		<div class="columns">

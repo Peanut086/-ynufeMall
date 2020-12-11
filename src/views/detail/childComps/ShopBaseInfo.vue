@@ -78,7 +78,6 @@
 		width: 100%;
 		padding: 0 5px;
 		margin-top: 10px;
-		height: 3000px;
 	}
 	
 	.shopInfo .shopName{
@@ -192,7 +191,7 @@
 		width: 100%;
 		text-align: center;
 		padding: 30px 0;
-		border-bottom: 1px solid #ccc;
+		border-bottom: 15px solid #e2e1e2;
 	}
 	
 	.comein>div{

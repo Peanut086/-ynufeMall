@@ -38,3 +38,26 @@ export class Shop{
 		this.level = data.level;
 	}
 }
+
+// 整合商品详情数据
+export class GoodsInfo{
+	constructor(detail){
+		this.desc = detail.desc;
+		this.key = detail.detailImage[0].key;
+		this.list = detail.detailImage[0].list;
+	}
+}
+
+// 整合商品参数所需要的数据
+export class ItemParam{
+	constructor(info,rule){
+		// 有些可能没有图片
+		this.image = info.image ? info.image : "";
+		this.infoKey = info.key;
+		this.ruleKey = rule.key;
+		this.set = info.set;
+		
+		this.disclaimer = rule.disclaimer;
+		this.table = rule.tables[0];
+	}
+}

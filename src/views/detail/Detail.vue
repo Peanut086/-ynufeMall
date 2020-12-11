@@ -1,13 +1,21 @@
 <template>
   <div class="contain">
     <detail-nav-bar class="detail-nav"/>
-		<scroll ref="scrollComp" class="content">
+		<scroll ref="scroll" 
+						class="contents"
+						:probeType="3"
+						:pullUpLoad="true">
 			<!-- 轮播 -->
 			<detail-swiper :topImg="topImg"/>
 			<!-- 商品基本信息 -->
-			<detail-base-info :goodsData="goods"></detail-base-info>
+			<detail-base-info :goodsData="goods"/>
 			<!-- 店铺基本信息 -->
-			<shop-base-info :shopInfo="shop"></shop-base-info>
+			<shop-base-info :shopInfo="shop"/>
+			<!-- 商品详情展示 -->
+			<detail-goods-info :goodsInfo="detaiGoodsInfo"
+													@loaded="loadCompelete"/>
+			<!-- 商品参数 -->
+			<goods-param-info :params="goodsParams"/>
 		</scroll>
 	</div>
 </template>
@@ -23,9 +31,13 @@
 	import DetailBaseInfo from './childComps/DetailBaseInfo'
 	// 导入店铺基本信息ShopBaseInfo组件
 	import ShopBaseInfo from './childComps/ShopBaseInfo'
+	// 导入商品详情展示组件DetailGoodsInfo
+	import DetailGoodsInfo from './childComps/DetailGoodsInfo'
+	// 导入商品参数组件
+	import GoodsParamInfo from './childComps/GoodsParamInfo'
 
   // 网络请求
-  import {getDetail,Goods,Shop} from 'network/detail'
+  import {getDetail,Goods,Shop,GoodsInfo,ItemParam} from 'network/detail'
 
   export default {
     name: 'Detail',
@@ -34,7 +46,9 @@
       DetailNavBar,
       DetailSwiper,
 			DetailBaseInfo,
-			ShopBaseInfo
+			ShopBaseInfo,
+			DetailGoodsInfo,
+			GoodsParamInfo
     },
     data(){
       return {
@@ -42,6 +56,8 @@
         topImg: [], // 保存轮播图数据
 				goods: {}, // 用于保存要传递给DetailBaseInfo组件的数据
 				shop: {},  // 用于保存店铺基本信息
+				detaiGoodsInfo: {}, // 用于保存商品详情
+				goodsParams: {},  // 用于保存商品参数
 			}
     },
     created(){
@@ -60,8 +76,20 @@
 				
 				// 保存请求到的店铺基本信息
 				this.shop = new Shop(datas.shopInfo)
+				
+				// 保存商品详情数据
+				this.detaiGoodsInfo = new GoodsInfo(datas.detailInfo)
+				
+				// 保存商品参数
+				this.goodsParams = new ItemParam(datas.itemParams.info,datas.itemParams.rule)
       })
-    }
+    },
+		methods: {
+			// 商品图片加载完毕，刷新content高度
+			loadCompelete(){
+				this.$refs.scroll && this.$refs.scroll.refreshContent()
+			}
+		}
   }
 </script>
 
@@ -71,9 +99,8 @@
 		height: 100vh;
 		z-index: 9;
 	}
-	.content{
+	.contents{
 		height: calc(100% - 44px);
-		z-index: 9;
 		background-color: #fff;
 	}
 	

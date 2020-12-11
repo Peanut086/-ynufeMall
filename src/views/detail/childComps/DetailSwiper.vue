@@ -1,6 +1,6 @@
 <template>
   <swiper class="container">
-    <swiper-item v-for="item in topImg">
+    <swiper-item v-for="(item,index) in topImg" :key="index">
       <img :src="item" alt="">
     </swiper-item>
   </swiper>
