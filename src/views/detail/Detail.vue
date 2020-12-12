@@ -16,6 +16,8 @@
 													@loaded="loadCompelete"/>
 			<!-- 商品参数 -->
 			<goods-param-info :params="goodsParams"/>
+			<!-- 评论区 -->
+			<detail-comment-info :comments="commentData"></detail-comment-info>
 		</scroll>
 	</div>
 </template>
@@ -35,9 +37,11 @@
 	import DetailGoodsInfo from './childComps/DetailGoodsInfo'
 	// 导入商品参数组件
 	import GoodsParamInfo from './childComps/GoodsParamInfo'
+	// 导入评论区组件DetailCommentInfo
+	import DetailCommentInfo from './childComps/DetailCommentInfo'
 
   // 网络请求
-  import {getDetail,Goods,Shop,GoodsInfo,ItemParam} from 'network/detail'
+  import {getDetail,Goods,Shop,GoodsInfo,ItemParam,Comment} from 'network/detail'
 
   export default {
     name: 'Detail',
@@ -48,7 +52,8 @@
 			DetailBaseInfo,
 			ShopBaseInfo,
 			DetailGoodsInfo,
-			GoodsParamInfo
+			GoodsParamInfo,
+			DetailCommentInfo
     },
     data(){
       return {
@@ -58,6 +63,7 @@
 				shop: {},  // 用于保存店铺基本信息
 				detaiGoodsInfo: {}, // 用于保存商品详情
 				goodsParams: {},  // 用于保存商品参数
+				commentData: {},  // 用于保存评论信息
 			}
     },
     created(){
@@ -82,6 +88,9 @@
 				
 				// 保存商品参数
 				this.goodsParams = new ItemParam(datas.itemParams.info,datas.itemParams.rule)
+				
+				// 保存商品评论
+				this.commentData = new Comment(datas.rate.cRate,datas.rate.list)
       })
     },
 		methods: {
@@ -100,6 +109,7 @@
 		z-index: 9;
 	}
 	.contents{
+		z-index: 9;
 		height: calc(100% - 44px);
 		background-color: #fff;
 	}

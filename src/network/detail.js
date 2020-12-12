@@ -61,3 +61,20 @@ export class ItemParam{
 		this.table = rule.tables[0];
 	}
 }
+
+// 整合用户评论相关的数据
+export class Comment{
+	constructor(cRate,list){
+		this.cRate = cRate;
+		// 当评论数据不为0时保存其他数据
+		if(cRate !== 0){
+			this.comment = list[0].content;
+			this.explain = list[0].explain;
+			this.cretaed = list[0].cretaed;
+			this.images = list[0].images;
+			this.userIcon = list[0].user.avatar;
+			this.userName = list[0].user.uname;
+			this.style = list[0].style;
+		}
+	}
+}

@@ -21,7 +21,7 @@
 			itemClick(){
 				// 避免多次点击同一个路由报错
 				if(this.$route.path !== this.path){
-					this.$router.replace(this.path)
+					this.$router.push(this.path)
 				}
 			}
 		},

@@ -1,5 +1,5 @@
 <template>
-	<div class="param-container">
+	<div v-if="Object.keys(params).length !== 0" class="param-container">
 		<div class="rule">
 			<!-- 尺码对照表 -->
 			<p>{{params.disclaimer}}</p>
@@ -28,6 +28,9 @@
 					<td v-for="(item_sub,index) in item " :key="index">{{item_sub}}</td>
 				</tr>
 			</table>
+			<div v-if="params.image">
+				<img :src="'http:' + params.image">
+			</div>
 		</div>
 	</div>
 </template>

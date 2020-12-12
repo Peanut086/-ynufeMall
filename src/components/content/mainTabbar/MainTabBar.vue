@@ -1,9 +1,5 @@
 <template>
 	<div>
-		<!--缓存当前激活的组件  除了Detail组件-->
-		<keep-alive exclude="Detail">
-			<router-view></router-view>
-		</keep-alive>
 		<tab-bar>
 			<tab-bar-item path="/home">
 				<!-- dom中使用别名需要加 ~ -->
