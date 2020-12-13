@@ -10,6 +10,13 @@ export function getDetail(iid){
   })
 }
 
+// 详情页推荐商品数据请求方法
+export function getRecommend(){
+	return request({
+		url: '/recommend'
+	})
+}
+
 
 // 用于整合商品信息轮播图下的detailBaseInfo组件所需的数据
 export class Goods{
@@ -70,7 +77,8 @@ export class Comment{
 		if(cRate !== 0){
 			this.comment = list[0].content;
 			this.explain = list[0].explain;
-			this.cretaed = list[0].cretaed;
+			this.cretaed = list[0].created;
+			
 			this.images = list[0].images;
 			this.userIcon = list[0].user.avatar;
 			this.userName = list[0].user.uname;

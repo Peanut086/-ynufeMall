@@ -4,7 +4,8 @@
 		<scroll ref="scroll" 
 						class="contents"
 						:probeType="3"
-						:pullUpLoad="true">
+						:pullUpLoad="true"
+						@scroll="onScrolling">
 			<!-- 轮播 -->
 			<detail-swiper :topImg="topImg"/>
 			<!-- 商品基本信息 -->
@@ -18,7 +19,12 @@
 			<goods-param-info :params="goodsParams"/>
 			<!-- 评论区 -->
 			<detail-comment-info :comments="commentData"></detail-comment-info>
+			<!-- 商品推荐 -->
+			<goods-list :goods="recommend"/>
 		</scroll>
+		<!-- 返回顶部  组件根元素监听原生事件，需要加.native修饰符 -->
+		<back-top @click.native="back"
+							v-if="positionY >= 1000"/>
 	</div>
 </template>
 
@@ -39,9 +45,14 @@
 	import GoodsParamInfo from './childComps/GoodsParamInfo'
 	// 导入评论区组件DetailCommentInfo
 	import DetailCommentInfo from './childComps/DetailCommentInfo'
+	// 导入推荐商品组件
+	import GoodsList from '../../components/content/goods/GoodsList'
+	
+	// 导入返回顶部按钮组件
+	import BackTop from '../../components/content/back-top/backTop.vue'
 
   // 网络请求
-  import {getDetail,Goods,Shop,GoodsInfo,ItemParam,Comment} from 'network/detail'
+  import {getDetail,Goods,Shop,GoodsInfo,ItemParam,Comment,getRecommend} from 'network/detail'
 
   export default {
     name: 'Detail',
@@ -53,7 +64,9 @@
 			ShopBaseInfo,
 			DetailGoodsInfo,
 			GoodsParamInfo,
-			DetailCommentInfo
+			DetailCommentInfo,
+			GoodsList,
+			BackTop,
     },
     data(){
       return {
@@ -64,6 +77,8 @@
 				detaiGoodsInfo: {}, // 用于保存商品详情
 				goodsParams: {},  // 用于保存商品参数
 				commentData: {},  // 用于保存评论信息
+				positionY: 0, // 用于保存y轴滚动的距离
+				recommend: [], // 用于保存请求到的推荐列表的数据
 			}
     },
     created(){
@@ -73,7 +88,6 @@
       // 根据id请求数据并保存下来
       getDetail(this.iid).then(res => {
         // 保存轮播图数据
-        console.log(res.data.result);
 				const datas = res.data.result;
         this.topImg = datas.itemInfo.topImages
 		
@@ -92,11 +106,27 @@
 				// 保存商品评论
 				this.commentData = new Comment(datas.rate.cRate,datas.rate.list)
       })
+			
+			/* 请求推荐模块的数据 */
+			getRecommend().then(res => {
+				// 保存数据
+				this.recommend = res.data.data.list
+			})
     },
 		methods: {
 			// 商品图片加载完毕，刷新content高度
 			loadCompelete(){
 				this.$refs.scroll && this.$refs.scroll.refreshContent()
+			},
+			
+			/* 返回顶部 */
+			back(){
+				this.$refs.scroll && this.$refs.scroll.backTop(0,0,800)
+			},
+			
+			/* 记录当前滚动的y值 */
+			onScrolling(position){
+				this.positionY = Math.abs(position);
 			}
 		}
   }
@@ -107,6 +137,7 @@
 		position: relative;
 		height: 100vh;
 		z-index: 9;
+		background-color: #fff;
 	}
 	.contents{
 		z-index: 9;

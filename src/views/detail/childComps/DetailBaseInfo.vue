@@ -76,6 +76,7 @@
 		font-size: 16px;
 		font-weight: 600;
 		color: rgb(255, 88, 120);
+		text-decoration: line-through;
 	}
 	
 	.now-price{
@@ -84,7 +85,6 @@
 		margin-left: 6px;
 		margin-top: 3px;
 		font-size: 12px;
-		text-decoration: line-through;
 	}
 	
 	.discount{

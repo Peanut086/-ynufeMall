@@ -3,7 +3,7 @@
 	<div class="container" @click="itemClick">
 		<a>
 			<div>
-				<img :src="goodsItem.show.img" alt="" @load="imgLoad">
+				<img :src="getUrl" alt="" @load="imgLoad">
 			</div>
 			<div class="info">
 				<p class="title">{{goodsItem.title}}</p>
@@ -21,7 +21,7 @@
 		props: {
 			// 父组件传递过来的要显示的商品的数据
 			goodsItem: {
-				type: Object,
+				type: [Object,Array],
 				default(){
 					return {}
 				}
@@ -37,6 +37,11 @@
 				// 点击后跳转到详情页  这里业务需求需要返回  所以使用push更合适
 				// 跳转的同时携带被点击的商品的id
 				this.$router.push('/detail/' + this.goodsItem.iid)
+			}
+		},
+		computed: {
+			getUrl(){
+				return this.goodsItem.image || this.goodsItem.show.img 
 			}
 		}
 	}
