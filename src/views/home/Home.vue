@@ -103,10 +103,12 @@
 			// 实例被挂载完成后开始监听商品展示组件的每一张图片的加载事件
 			// this.$bus.$on('imgLoaded',this.refreshHeight)
 			const refresh = debounce(this.refreshHeight,100)
-
-			this.$bus.$on('imgLoaded',()=>{
+			
+			this.imgLoadedListener = ()=>{
 				refresh()
-			})
+			}
+			
+			this.$bus.$on('imgLoaded',this.imgLoadedListener)
 		},
 		deactivated() {
 			// 保存离开时bs滚动的Y值
@@ -114,6 +116,7 @@
 		},
 		activated() {
 			// 再次激活时，设置y值为离开前的那个值
+			this.refreshHeight()  // 个别时候返回首页无法滚动,因此返回首页后再计算一次scroll的content区域高度
 			this.$refs.scroll && this.$refs.scroll.backTop(0,this.saveY,0)
 		},
 		// 保存请求到的数据
@@ -131,6 +134,7 @@
 				tabConOffsetTop: 0,  // 保存tabbarControl的offsetTop值
 				isTabShow: false,  // 顶部用于吸顶的tab是否显示
 				saveY: 0,  // 用于保存当前组件取消激活时的bs的Y值
+				imgLoadedListener: null, // 保存事件总线监听的事件
 			}
 		},
 		methods: {

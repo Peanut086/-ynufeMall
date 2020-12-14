@@ -34,6 +34,9 @@
       // 点击导航时，修改当前的index
       itemClick(index){
         this.currentIndex = index
+				
+				// 发送被点击的标题的index
+				this.$emit('detailNavClick',index)
       },
       // 返回按钮
       backClick(){

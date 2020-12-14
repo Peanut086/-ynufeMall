@@ -1,6 +1,6 @@
 <template>
   <div class="contain">
-    <detail-nav-bar class="detail-nav"/>
+    <detail-nav-bar class="detail-nav" @detailNavClick="gotoTarget"/>
 		<scroll ref="scroll" 
 						class="contents"
 						:probeType="3"
@@ -16,11 +16,11 @@
 			<detail-goods-info :goodsInfo="detaiGoodsInfo"
 													@loaded="loadCompelete"/>
 			<!-- 商品参数 -->
-			<goods-param-info :params="goodsParams"/>
+			<goods-param-info ref="param" :params="goodsParams"/>
 			<!-- 评论区 -->
-			<detail-comment-info :comments="commentData"></detail-comment-info>
+			<detail-comment-info ref="comment" :comments="commentData"></detail-comment-info>
 			<!-- 商品推荐 -->
-			<goods-list :goods="recommend"/>
+			<goods-list ref="recommend" :goods="recommend"/>
 		</scroll>
 		<!-- 返回顶部  组件根元素监听原生事件，需要加.native修饰符 -->
 		<back-top @click.native="back"
@@ -79,6 +79,7 @@
 				commentData: {},  // 用于保存评论信息
 				positionY: 0, // 用于保存y轴滚动的距离
 				recommend: [], // 用于保存请求到的推荐列表的数据
+				topThemeY: [], // 用于保存nav对应的组件的offsetTop值
 			}
     },
     created(){
@@ -117,6 +118,13 @@
 			// 商品图片加载完毕，刷新content高度
 			loadCompelete(){
 				this.$refs.scroll && this.$refs.scroll.refreshContent()
+				
+				// 计算nav对应的模块的offsetTop值    这部分的逻辑代码放到create、mounted、updated中都不合适   也不能使用$nextTick()
+				// 由于所有图片加载完成后才会执行该方法，因此这里不需要考虑防抖
+				this.topThemeY.push(0)
+				this.topThemeY.push(this.$refs.param.$el.offsetTop)
+				this.topThemeY.push(this.$refs.comment.$el.offsetTop)
+				this.topThemeY.push(this.$refs.recommend.$el.offsetTop)
 			},
 			
 			/* 返回顶部 */
@@ -127,6 +135,11 @@
 			/* 记录当前滚动的y值 */
 			onScrolling(position){
 				this.positionY = Math.abs(position);
+			},
+			
+			/* 点击导航跳转到对应的位置 */
+			gotoTarget(index){
+				this.$refs.scroll && this.$refs.scroll.backTop(0,-this.topThemeY[index],800)
 			}
 		}
   }
