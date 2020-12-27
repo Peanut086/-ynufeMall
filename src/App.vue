@@ -10,12 +10,16 @@
 
 <script>
 	import MainTabBar from "./components/content/mainTabbar/MainTabBar";
+	
+	// 导入状态管理对象
+	import store from './store/index.js'
 
 	export default {
 		name: 'app',
 		components: {
 			MainTabBar
-		}
+		},
+		store
 	}
 </script>
 

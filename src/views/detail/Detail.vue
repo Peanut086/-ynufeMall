@@ -1,11 +1,12 @@
 <template>
   <div class="contain">
-    <detail-nav-bar class="detail-nav" @detailNavClick="gotoTarget"/>
+    <detail-nav-bar class="detail-nav" @detailNavClick="gotoTarget" ref="nav"/>
 		<scroll ref="scroll" 
 						class="contents"
 						:probeType="3"
 						:pullUpLoad="true"
-						@scroll="onScrolling">
+						@scroll="onScrolling"
+						touch-action: none>
 			<!-- 轮播 -->
 			<detail-swiper :topImg="topImg"/>
 			<!-- 商品基本信息 -->
@@ -25,6 +26,8 @@
 		<!-- 返回顶部  组件根元素监听原生事件，需要加.native修饰符 -->
 		<back-top @click.native="back"
 							v-if="positionY >= 1000"/>
+		<!-- 底部导航 -->
+		<detai-bottom-nav @addGoods="addGoodsItem"/>
 	</div>
 </template>
 
@@ -50,6 +53,8 @@
 	
 	// 导入返回顶部按钮组件
 	import BackTop from '../../components/content/back-top/backTop.vue'
+	// 导入底部导航组件
+	import DetaiBottomNav from './childComps/DetailBottomNav.vue'
 
   // 网络请求
   import {getDetail,Goods,Shop,GoodsInfo,ItemParam,Comment,getRecommend} from 'network/detail'
@@ -67,6 +72,7 @@
 			DetailCommentInfo,
 			GoodsList,
 			BackTop,
+			DetaiBottomNav,
     },
     data(){
       return {
@@ -80,6 +86,7 @@
 				positionY: 0, // 用于保存y轴滚动的距离
 				recommend: [], // 用于保存请求到的推荐列表的数据
 				topThemeY: [], // 用于保存nav对应的组件的offsetTop值
+				curIndex: null, // 用于保存nav联动滚动时需要传递的index
 			}
     },
     created(){
@@ -135,11 +142,52 @@
 			/* 记录当前滚动的y值 */
 			onScrolling(position){
 				this.positionY = Math.abs(position);
+				
+				// 滚动时nav导航的联动效果实现方法
+				const posi = Math.abs(position)
+				const themeLength = this.topThemeY.length;
+				/* i~i+1之间
+				 0:0~n1之间  index--0
+				 1:n1~n2之间  index--1
+				 2:n2~n3之间  index--2
+				 3:n3及以上  index--3
+				 */
+				// 1.判断当前滚动到什么位置
+				// 需要分情况  因为前三个区间是闭合的   最后一个可以大于等于临界值
+				for (let i in this.topThemeY) {
+					// 前三个
+					if(i < themeLength - 1){
+						let tempNum = Number(i) + 1
+						if(posi > this.topThemeY[i] && posi <= this.topThemeY[tempNum]){
+							this.curIndex = i;
+							this.$refs.nav.currentIndex = this.curIndex
+						}
+					}
+					// 最后一个
+					else if(posi >= this.topThemeY[i]){
+						this.curIndex = i;
+						this.$refs.nav.currentIndex = this.curIndex
+					}
+				}
 			},
 			
 			/* 点击导航跳转到对应的位置 */
 			gotoTarget(index){
 				this.$refs.scroll && this.$refs.scroll.backTop(0,-this.topThemeY[index],800)
+			},
+			
+			/* 添加到购物车 */
+			addGoodsItem(){
+				// 用于保存加入到购物车的商品需要展示的信息
+				let product = {}
+				product.title = this.goods.title
+				product.desc = this.detaiGoodsInfo.desc
+				product.price = this.goods.lowNowPrice
+				product.image = this.topImg[0]
+				product.iid = this.iid  // 需要传递id  
+				
+				// 将商品保存到vuex中
+				this.$store.dispatch('addCartItem',product)
 			}
 		}
   }

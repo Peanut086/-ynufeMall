@@ -85,6 +85,7 @@
 	.info>.price{
 		color: #ff5777;
 		margin-left: 10px;
+		border: none;
 	}
 
 	.info>.icon{
