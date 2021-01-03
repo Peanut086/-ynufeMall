@@ -1,4 +1,2 @@
-export default {
-	ADD_ITEM : 'addItem',
-	ADD_COUNT : 'addCount'
-}
+export const ADD_ITEM = 'addItem'
+export const ADD_COUNT = 'addCount'

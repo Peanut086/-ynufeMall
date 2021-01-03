@@ -173,7 +173,8 @@
 			
 			/* 点击导航跳转到对应的位置 */
 			gotoTarget(index){
-				this.$refs.scroll && this.$refs.scroll.backTop(0,-this.topThemeY[index],800)
+				// 为啥要 -1 呢？  因为这里计算的不是很准确  从而导致跳转的不太对  需要稍微减掉一部分值
+				this.$refs.scroll && this.$refs.scroll.backTop(0,-this.topThemeY[index] - 1,800)
 			},
 			
 			/* 添加到购物车 */

@@ -1,3 +1,9 @@
+// 导入常量
+import {
+	ADD_COUNT,
+	ADD_ITEM
+} from './mutations_type.js'
+
 export default {
 		// 先判断数组中是否已经存在要添加的商品  不用解构赋值的话：addCartItem({commit},products)
 		addCartItem({state,commit},products){
@@ -6,9 +12,9 @@ export default {
 			
 			// 如果存在
 			if(oldProduct){
-				commit('addCount',oldProduct)
+				commit(ADD_COUNT,oldProduct)
 			}else{
-				commit('addItem',products)
+				commit(ADD_ITEM,products)
 			}
 		}
 	}

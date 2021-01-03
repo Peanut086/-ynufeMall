@@ -1,5 +1,8 @@
 // 导入常量
-
+import {
+	ADD_COUNT,
+	ADD_ITEM
+} from './mutations_type.js'
 
 export default {
 		/* 将要添加的商品加入到数组中 */
@@ -22,7 +25,7 @@ export default {
 		} */
 	
 		/* 商品第一次被添加  添加商品 */
-		addItem(state,payload){
+		[ADD_ITEM](state,payload){
 			// 将count重置为1
 			payload.count = 1
 			// 将对象添加到数组中
@@ -30,7 +33,7 @@ export default {
 		},
 		
 		/* 商品已经存在  只需要将计数+1 */
-		addCount(state,payload){
+		[ADD_COUNT](state,payload){
 			payload.count += 1
 		}
 	}
